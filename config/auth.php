@@ -4,19 +4,19 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Restringe el acceso solo a usuarios logueados
-function verificarAutenticado() {
+// Función para verificar si el usuario ha iniciado sesión
+function verificarSesion() {
     if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php?redirect=" . urlencode($_SERVER['REQUEST_URI']));
+        header("Location: ../login.php");
         exit;
     }
 }
 
-// Restringe el acceso exclusivo al Administrador
+// Función para verificar si el usuario es Administrador
 function verificarAdmin() {
-    verificarAutenticado();
-    if ($_SESSION['user_rol'] !== 'ADMIN') {
-        header("Location: acceso_denegado.php");
+    verificarSesion();
+    if (!isset($_SESSION['user_rol']) || strtoupper($_SESSION['user_rol']) !== 'ADMIN') {
+        header("Location: ../tienda.php?error=acceso_denegado");
         exit;
     }
 }

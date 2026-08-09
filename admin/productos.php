@@ -97,7 +97,8 @@ $productos = $pdo->query("SELECT p.*, c.nombre AS categoria FROM productos p JOI
             <a class="navbar-brand fw-bold" href="index.php"><i class="fa-solid fa-gauge me-2"></i>Panel Admin</a>
             <div class="d-flex align-items-center">
                 <a href="../index.php" class="btn btn-outline-light btn-sm me-2">Ver Tienda</a>
-                <a href="../logout.php" class="btn btn-outline-danger btn-sm">Salir</a>
+                <!-- RUTA CORREGIDA A CONFIG/LOGOUT.PHP -->
+                <a href="../config/logout.php" class="btn btn-outline-danger btn-sm">Salir</a>
             </div>
         </div>
     </nav>
@@ -193,11 +194,7 @@ $productos = $pdo->query("SELECT p.*, c.nombre AS categoria FROM productos p JOI
                                     <td>
                                         <?php 
                                             $imgDB = $prod['imagen'] ?? 'default.png';
-                                            if (strpos($imgDB, '/') !== false) {
-                                                $rutaFinal = '../uploads/' . $imgDB;
-                                            } else {
-                                                $rutaFinal = '../uploads/' . $imgDB;
-                                            }
+                                            $rutaFinal = '../uploads/' . $imgDB;
                                         ?>
                                         <!-- Miniatura con efecto hover y evento para abrir en modal -->
                                         <img src="<?= htmlspecialchars($rutaFinal) ?>" alt="Img" class="rounded img-thumbnail-zoom" width="45" height="45" style="object-fit: cover;" 

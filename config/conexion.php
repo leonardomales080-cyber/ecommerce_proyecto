@@ -1,5 +1,4 @@
 <?php
-// config/conexion.php
 $host = 'localhost';
 $db   = 'db_ecommerce';
 $user = 'root';
@@ -16,6 +15,6 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    die("Error de conexión a la base de datos: " . $e->getMessage());
 }
 ?>

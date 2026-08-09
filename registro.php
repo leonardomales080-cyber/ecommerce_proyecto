@@ -7,19 +7,18 @@ $error = "";
 $exito = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $cedula = trim($_POST['cedula']);
-    $nombres = trim($_POST['nombres']);
-    $apellidos = trim($_POST['apellidos']);
-    $telefono = trim($_POST['telefono']);
-    $correo = trim($_POST['correo']);
-    $password = $_POST['password'];
-    $direccion = trim($_POST['direccion']);
+    $cedula = trim($_POST['cedula'] ?? '');
+    $nombres = trim($_POST['nombres'] ?? '');
+    $apellidos = trim($_POST['apellidos'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $correo = trim($_POST['correo'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $direccion = trim($_POST['direccion'] ?? '');
     
     if (!empty($cedula) && !empty($nombres) && !empty($apellidos) && !empty($correo) && !empty($password)) {
         try {
-            // Verificar si el correo o cédula ya existen
-            $stmtCheck = $pdo->prepare("SELECT id FROM usuarios WHERE correo = ? OR cedula = ?");
-            $stmtCheck->execute([$correo, $cedula]);
+            $stmtCheck = $pdo->prepare("SELECT id FROM usuarios WHERE correo = ? OR email = ? OR cedula = ?");
+            $stmtCheck->execute([$correo, $correo, $cedula]);
             
             if ($stmtCheck->rowCount() > 0) {
                 $error = "El correo electrónico o la cédula ya se encuentran registrados.";
@@ -90,15 +89,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Correo Electrónico</label>
-                            <input type="email" name="correo" class="form-control" required autocomplete="new-email">
+                            <input type="email" name="correo" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" name="password" class="form-control" required autocomplete="new-password">
+                            <input type="password" name="password" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
-                            <textarea name="direccion" class="form-control" rows="2" autocomplete="off"></textarea>
+                            <textarea name="direccion" class="form-control" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn btn-dark w-100 fw-semibold py-2">Registrarse</button>
                     </form>
