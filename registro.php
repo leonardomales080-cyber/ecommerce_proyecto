@@ -45,16 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Clientes | E-Commerce</title>
+    <title>Registro de Clientes | E-Commerce M.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos de marca de agua -->
+    <link rel="stylesheet" href="admin/assets/img/logo.css">
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
 
-    <div class="container">
+    <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-md-7 col-lg-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="text-center mb-3">
+                        <img src="admin/assets/img/logo_marca_agua.png" alt="Logo" class="img-fluid mb-2" style="max-height: 400px;">
+                    </div>
                     <h2 class="fw-bold text-center mb-4">Registro de Cliente</h2>
 
                     <?php if(!empty($error)): ?>

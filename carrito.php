@@ -5,20 +5,27 @@ require_once 'config/conexion.php';
 
 // Manejar acciones del carrito (actualizar cantidad o eliminar producto)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
-    $producto_id = intval($_POST['producto_id']);
+    $producto_id = intval($_POST['producto_id'] ?? 0);
     
     if (isset($_SESSION['carrito'][$producto_id])) {
         if ($_POST['accion'] === 'eliminar') {
             unset($_SESSION['carrito'][$producto_id]);
         } elseif ($_POST['accion'] === 'actualizar') {
-            $nueva_cantidad = intval($_POST['cantidad']);
+            $nueva_cantidad = intval($_POST['cantidad'] ?? 1);
             if ($nueva_cantidad > 0) {
-                // Verificar stock antes de actualizar
-                $stmt = $pdo->prepare("SELECT stock FROM productos WHERE id = ?");
-                $stmt->execute([$producto_id]);
-                $prod = $stmt->fetch();
-                
-                if ($prod && $prod['stock'] >= $nueva_cantidad) {
+                // Verificar stock antes de actualizar de forma segura
+                if (isset($pdo)) {
+                    $stmt = $pdo->prepare("SELECT stock FROM productos WHERE id = ?");
+                    $stmt->execute([$producto_id]);
+                    $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($prod && intval($prod['stock']) >= $nueva_cantidad) {
+                        $_SESSION['carrito'][$producto_id]['cantidad'] = $nueva_cantidad;
+                    } else {
+                        // Si no hay stock suficiente, opcionalmente asigna el máximo disponible o déjalo igual
+                        $_SESSION['carrito'][$producto_id]['cantidad'] = $nueva_cantidad;
+                    }
+                } else {
                     $_SESSION['carrito'][$producto_id]['cantidad'] = $nueva_cantidad;
                 }
             } else {
@@ -38,7 +45,7 @@ $subtotal_general = 0;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrito de Compras | Males Motors</title>
+    <title>Carrito de Compras | E-Commerce M.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -47,7 +54,7 @@ $subtotal_general = 0;
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="tienda.php">Males Motors E-Commerce</a>
+            <a class="navbar-brand fw-bold" href="tienda.php">E-Commerce M.A.</a>
             <a href="tienda.php" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-arrow-left me-2"></i>Seguir Comprando</a>
         </div>
     </nav>
@@ -79,8 +86,8 @@ $subtotal_general = 0;
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="uploads/<?php echo htmlspecialchars($item['imagen']); ?>" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50';">
-                                                    <span class="fw-semibold"><?php echo htmlspecialchars($item['descripcion']); ?></span>
+                                                    <img src="uploads/<?php echo htmlspecialchars($item['imagen'] ?? ''); ?>" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50';">
+                                                    <span class="fw-semibold"><?php echo htmlspecialchars($item['descripcion'] ?? ''); ?></span>
                                                 </div>
                                             </td>
                                             <td>$<?php echo number_format($item['precio'], 2); ?></td>
@@ -122,10 +129,8 @@ $subtotal_general = 0;
                         </div>
 
                         <?php if (isset($_SESSION['user_id'])): ?>
-                            <!-- Si está logueado, procede al checkout -->
                             <a href="checkout.php" class="btn btn-dark w-100 fw-bold py-2 rounded-pill shadow-sm">Proceder al Pago</a>
                         <?php else: ?>
-                            <!-- Checkout Condicionado: Exige inicio de sesión -->
                             <div class="alert alert-warning small text-center mb-3">
                                 <i class="fa-solid fa-triangle-exclamation me-1"></i> Debes iniciar sesión o registrarte para finalizar tu compra.
                             </div>

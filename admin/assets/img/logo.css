@@ -1,0 +1,48 @@
+/* admin/assets/img/logo.css o la ruta correspondiente */
+
+body.bg-light {
+    position: relative;
+    background-color: #f8f9fa !important;
+    min-height: 100vh;
+}
+
+/* Estilos globales para la marca de agua y diseño corporativo */
+
+body.bg-light {
+    position: relative;
+    background-color: #f8f9fa !important;
+    min-height: 100vh;
+}
+
+/* Marca de agua central fija en todas las pantallas */
+body.bg-light::before {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background-image: url('logo_marca_agua.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.08;
+    /* Visibilidad óptima sin estorbar */
+    pointer-events: none;
+    /* Permite hacer clics a través de la marca de agua */
+    z-index: 0;
+}
+
+/* Asegurar que el contenido interactivo y tarjetas estén siempre por encima de la marca de agua */
+body.bg-light>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Clase auxiliar para logotipos principales con mejor presencia visual */
+.logo-corporativo {
+    max-height: 50px;
+    width: auto;
+    object-fit: contain;
+}

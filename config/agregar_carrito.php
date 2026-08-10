@@ -1,60 +1,91 @@
 <?php
+// config/agregar_carrito.php
 session_start();
 require_once 'conexion.php';
 
-// Asegurar que se reciba una petición POST y el ID del producto
+$esAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['producto_id'])) {
     $producto_id = intval($_POST['producto_id']);
     $cantidad = isset($_POST['cantidad']) ? intval($_POST['cantidad']) : 1;
 
-    // Verificar que el producto exista y tenga stock
-    $stmt = $pdo->prepare("SELECT * FROM productos WHERE id = ? AND estado = 1");
+    $stmt = $pdo->prepare("SELECT * FROM productos WHERE id = ?");
     $stmt->execute([$producto_id]);
     $producto = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($producto) {
-        if ($producto['stock'] >= $cantidad) {
-            // Inicializar el carrito en sesión si no existe
-            if (!isset($_SESSION['carrito'])) {
-                $_SESSION['carrito'] = [];
-            }
+        $stock_disponible = isset($producto['stock']) ? intval($producto['stock']) : 999;
 
-            // Si el producto ya está en el carrito, sumar la cantidad; si no, agregarlo
+        if (!isset($_SESSION['carrito'])) {
+            $_SESSION['carrito'] = [];
+        }
+
+        $cantidad_actual_en_carrito = isset($_SESSION['carrito'][$producto_id]) ? $_SESSION['carrito'][$producto_id]['cantidad'] : 0;
+
+        if ($stock_disponible >= ($cantidad_actual_en_carrito + $cantidad)) {
             if (isset($_SESSION['carrito'][$producto_id])) {
                 $_SESSION['carrito'][$producto_id]['cantidad'] += $cantidad;
             } else {
                 $_SESSION['carrito'][$producto_id] = [
                     'id' => $producto['id'],
-                    'descripcion' => $producto['descripcion'],
-                    'precio' => $producto['precio'],
-                    'imagen' => $producto['imagen'],
+                    'descripcion' => $producto['descripcion'] ?? 'Producto',
+                    'precio' => $producto['precio'] ?? 0,
+                    'imagen' => $producto['imagen'] ?? '',
                     'cantidad' => $cantidad
                 ];
             }
 
-            // Contar el total de items en el carrito para la respuesta
             $total_items = array_sum(array_column($_SESSION['carrito'], 'cantidad'));
 
-            echo json_encode([
-                'status' => 'success',
-                'message' => '¡Producto añadido al carrito correctamente!',
-                'total_items' => $total_items
-            ]);
+            if ($esAjax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => '¡Producto agregado al carrito!',
+                    'total_items' => $total_items
+                ]);
+                exit();
+            } else {
+                header("Location: ../tienda.php");
+                exit();
+            }
         } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'No hay suficiente stock disponible.'
-            ]);
+            if ($esAjax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'No hay suficiente stock disponible.'
+                ]);
+                exit();
+            } else {
+                header("Location: ../tienda.php?error=stock");
+                exit();
+            }
         }
     } else {
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'El producto no es válido.'
-        ]);
+        if ($esAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'El producto no es válido.'
+            ]);
+            exit();
+        } else {
+            header("Location: ../tienda.php?error=producto");
+            exit();
+        }
     }
 } else {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Petición no válida.'
-    ]);
+    if ($esAjax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Petición no válida.'
+        ]);
+        exit();
+    } else {
+        header("Location: ../tienda.php");
+        exit();
+    }
 }
+?>

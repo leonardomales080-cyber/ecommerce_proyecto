@@ -49,9 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión | E-Commerce</title>
+    <title>Iniciar Sesión | E-Commerce M.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos de marca de agua -->
+    <link rel="stylesheet" href="admin/assets/img/logo.css">
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
     <div class="container">
@@ -59,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-md-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
                     <div class="text-center mb-4">
-                        <i class="fa-solid fa-lock fa-2x text-dark mb-2"></i>
+                        <img src="admin/assets/img/logo_E_Commerce.png" alt="Logo M.A." class="img-fluid mb-2" style="max-height: 200px; width: auto; object-fit: contain;">
                         <h2 class="fw-bold">Iniciar Sesión</h2>
-                        <p class="text-muted small">Ingresa a tu cuenta de E-Commerce</p>
+                        <p class="text-muted small">Ingresa a tu cuenta de E-Commerce M.A.</p>
                     </div>
 
                     <?php if(!empty($error)): ?>
